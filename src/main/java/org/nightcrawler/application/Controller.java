@@ -12,7 +12,7 @@ public class Controller {
 	private final PageRepository repository = null;
 	private final Crawler crawler = null;
 	
-	public StrinSet<E>eneratePageMap(final URI url) {
+	public String generatePageMap(final URI url) {
 		Set<Page> pages = crawler.crawl(uri);
 		
 		
