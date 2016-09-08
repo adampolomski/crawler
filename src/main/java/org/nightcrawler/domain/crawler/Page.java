@@ -1,8 +1,9 @@
-package org.nightcrawler.domain.crawler.page;
+package org.nightcrawler.domain.crawler;
 
 import java.net.URI;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class Page {	
 	private final URI address;
@@ -16,7 +17,11 @@ public class Page {
 	}
 
 	public <T> T render(final Renderer<T> renderer) {
-		return null;
+		return renderer.address(address).links(links).resources(resources).build();
+	}
+	
+	public void visitLinks(final Consumer<URI> visitor) {
+		links.forEach(visitor);
 	}
 
 	@Override
