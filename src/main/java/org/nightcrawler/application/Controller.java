@@ -11,7 +11,7 @@ public class Controller {
 	private final Crawler crawler = null;
 	
 	public String generatePageMap(final URI uri) {
-		final Set<Page> pages = crawler.crawl(uri);			
+		//final Set<Page> pages = crawler.crawl(uri);			
 		return null;		
 	}
 }

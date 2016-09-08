@@ -2,9 +2,10 @@ package org.nightcrawler.domain.crawler;
 
 import java.net.URI;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public interface Crawler {
 
-	public Set<Page> crawl(final URI uri);
+	public <T> T crawl(final URI uri, final Supplier<T> supplier);
 	
 }
