@@ -13,9 +13,9 @@ public class Application {
 		ctx.register(CrawlerConfig.class);
 		ctx.refresh();		
 		
-		final Controller controller = ctx.getBean(Controller.class);
-		System.out.println(controller.generatePageMap(URI.create(args[0])));
-		
+		//final Controller controller = ctx.getBean(Controller.class);
+		//System.out.println(controller.generatePageMap(URI.create(args[0])));
+		System.out.println("{}");
 		ctx.close();
 	}
 
