@@ -52,7 +52,7 @@ public class ApplicationTest {
 	}
 
 	private String executeCrawler() throws IOException, InterruptedException {
-		final Process ps = Runtime.getRuntime().exec(new String[] { "java", "-jar", JAR_PATH.get() });
+		final Process ps = Runtime.getRuntime().exec(new String[] { "java", "-jar", JAR_PATH.get(), "http://localhost:8000" });
 		Verify.verify(ps.waitFor() == 0);
 
 		try (final Scanner scanner = new Scanner(ps.getInputStream(), "utf-8")) {
