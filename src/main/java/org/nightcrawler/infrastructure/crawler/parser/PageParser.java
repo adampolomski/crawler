@@ -5,5 +5,5 @@ import org.nightcrawler.domain.crawler.Page;
 @FunctionalInterface
 public interface PageParser {
 
-	Page from(String content);
+	Page parse(String content);
 }

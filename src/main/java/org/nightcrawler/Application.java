@@ -14,7 +14,7 @@ public class Application {
 		ctx.refresh();		
 		
 		final Controller controller = ctx.getBean(Controller.class);
-		System.out.println(controller.generatePageMap(URI.create(args[0])));		
+		System.out.print(controller.generatePageMap(URI.create("http://www.google.com")));		
 		ctx.close();
 	}
 

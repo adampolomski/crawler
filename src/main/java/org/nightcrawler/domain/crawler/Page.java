@@ -1,6 +1,7 @@
 package org.nightcrawler.domain.crawler;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -16,7 +17,7 @@ public class Page {
 		this.resources = Objects.requireNonNull(resources);
 	}
 
-	public <T> T render(final Renderer<T> renderer) {
+	public <T> T render(final Renderer<T> renderer) {		
 		return renderer.address(address).links(links).resources(resources).build();
 	}
 	
@@ -54,6 +55,8 @@ public class Page {
 	}
 	
 	public static class Builder {
-		
+		public Page build(final URI address) {
+			return new Page(address, Collections.emptySet(), Collections.emptySet());
+		}
 	}
 }

@@ -9,20 +9,25 @@ import org.asynchttpclient.Response;
 import org.nightcrawler.domain.crawler.Page;
 import org.nightcrawler.infrastructure.crawler.parser.AsyncParser;
 
-public class AsyncPageRetriever implements PageRetriever {
+public class AsyncPageRetriever extends PageRetriever {
 
-	private final AsyncHttpClient asyncHttpClient = null;
-	private final AsyncParser asyncParser = null;
+	private final AsyncHttpClient asyncHttpClient;
+	private final AsyncParser asyncParser;
+
+	public AsyncPageRetriever(final AsyncHttpClient asyncHttpClient, final AsyncParser asyncParser) {
+		this.asyncHttpClient = asyncHttpClient;
+		this.asyncParser = asyncParser;
+	}
 
 	@Override
-	public void retrieve(final URI uri, final Consumer<Page> handler) {
+	public void crawl(final URI uri, final Consumer<Page> handler) {
 		asyncHttpClient.prepareGet(uri.toString()).execute(new AsyncCompletionHandler<Response>() {
 			@Override
 			public Response onCompleted(final Response response) throws Exception {
-				asyncParser.from(response.getResponseBody(), handler);
+				asyncParser.parse(response.getResponseBody(), handler);
 				return response;
 			}
 
 		});
-	}
+	}	
 }

@@ -5,8 +5,12 @@ import java.util.function.Consumer;
 
 import org.nightcrawler.domain.crawler.Page;
 
-public interface PageRetriever {
+public abstract class PageRetriever {
 
-	void retrieve(URI uri, Consumer<Page> handler);
-
+	public abstract void crawl(URI uri, Consumer<Page> handler);
+	
+	public void crawl(final URI uri) {
+		crawl(uri, p -> {});
+	}
+	
 }

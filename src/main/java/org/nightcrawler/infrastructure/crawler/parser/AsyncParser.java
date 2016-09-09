@@ -16,7 +16,7 @@ public class AsyncParser {
 		this.executorService = Objects.requireNonNull(executorService);
 	}
 
-	public void from(final String content, final Consumer<Page> handler) {
-		executorService.execute(() -> handler.accept(delegate.from(content)));
+	public void parse(final String content, final Consumer<Page> handler) {
+		executorService.execute(() -> handler.accept(delegate.parse(content)));
 	}
 }
