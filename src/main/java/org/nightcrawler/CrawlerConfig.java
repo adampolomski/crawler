@@ -5,6 +5,7 @@ import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 import org.asynchttpclient.DefaultAsyncHttpClient;
+import org.asynchttpclient.DefaultAsyncHttpClientConfig;
 import org.nightcrawler.application.Controller;
 import org.nightcrawler.domain.crawler.Crawler;
 import org.nightcrawler.infrastructure.crawler.ConcurrentCrawlerFactory;
@@ -18,18 +19,19 @@ public class CrawlerConfig {
 
 	@Bean
 	Controller controller() {
-		Supplier<Crawler> crawlerFactory = new ConcurrentCrawlerFactory(httpClient(), new AsyncParser(
-				new JsoupPageParser(), parserExecutorService()));
+		Supplier<Crawler> crawlerFactory = new ConcurrentCrawlerFactory(httpClient(),
+				new AsyncParser(new JsoupPageParser(), parserExecutorService()));
 		return new Controller(crawlerFactory);
 	}
 
 	@Bean
 	public ExecutorService parserExecutorService() {
-		return Executors.newSingleThreadExecutor();
+		return Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	}
 
 	@Bean
 	public DefaultAsyncHttpClient httpClient() {
-		return new DefaultAsyncHttpClient();
+		return new DefaultAsyncHttpClient(
+				new DefaultAsyncHttpClientConfig.Builder().setFollowRedirect(true).build());
 	}
 }

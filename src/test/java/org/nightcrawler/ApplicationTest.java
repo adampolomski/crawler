@@ -33,7 +33,7 @@ public class ApplicationTest {
 		Assume.assumeTrue(JAR.map(File::exists).orElse(false));
 	}
 
-	public HttpServer httpServer() throws IOException {
+	private HttpServer httpServer() throws IOException {
 		final HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
 		server.createContext("/", new PageHandler());
 		return server;
@@ -78,18 +78,18 @@ public class ApplicationTest {
 			return page.isEmpty() ? "index.html" : page;
 		}
 
-		public String page(final String identifier) throws IOException {
+		private String page(final String identifier) throws IOException {
 			final InputStream stream = new ClassPathResource("page/" + identifier).getInputStream();
 			return IOUtils.toString(stream, Charset.forName("UTF-8"));
 		}
 	}
 	
-	public static JsonNode json(final String payload) throws IOException {
+	private static JsonNode json(final String payload) throws IOException {
         final ObjectMapper mapper = new ObjectMapper();
         return mapper.readTree(payload);
     }
 
-    public static JsonNode pageMap() throws IOException {
+    private static JsonNode pageMap() throws IOException {
         final ObjectMapper mapper = new ObjectMapper();
         final InputStream stream = new ClassPathResource("pageMap.json").getInputStream();
         return mapper.readTree(stream);

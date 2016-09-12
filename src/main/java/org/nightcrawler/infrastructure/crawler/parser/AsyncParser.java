@@ -3,9 +3,6 @@ package org.nightcrawler.infrastructure.crawler.parser;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
-import org.nightcrawler.domain.crawler.Page;
-import org.nightcrawler.domain.crawler.Page.Builder;
-
 import com.google.common.base.Preconditions;
 
 public class AsyncParser {
@@ -18,7 +15,7 @@ public class AsyncParser {
 		this.executorService = Preconditions.checkNotNull(executorService);
 	}
 
-	public void parse(final String content, final Builder builder, final Consumer<Page> handler) {
+	public <P> void parse(final String content, final PageBuilder<P> builder, final Consumer<P> handler) {
 		executorService.execute(() -> handler.accept(delegate.parse(content, builder)));
 	}
 }

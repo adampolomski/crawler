@@ -1,13 +1,15 @@
 package org.nightcrawler.domain.crawler;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.nightcrawler.infrastructure.crawler.parser.PageBuilder;
+
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
 public class Page {	
@@ -52,37 +54,45 @@ public class Page {
 				.toString();
 	}
 
-	public static Builder builder(final URI address) {
-		return new Builder(address);
+	public static PageBuilder<Page> builder(final URI address) {
+		return new Builder(normalize(address));
 	}
 	
-	public static class Builder {
+	public static class Builder implements PageBuilder<Page> {
 		private final URI address;
 		private final ImmutableSet.Builder<URI> links;
 		private final ImmutableSet.Builder<URI> resources;
 		
 		private Builder(final URI address) {
-			this.address = address;
+			this.address = Preconditions.checkNotNull(address);
 			this.links = ImmutableSet.builder();
 			this.resources = ImmutableSet.builder();
 		}
-		
+				
+		@Override
 		public <T> T forAddress(final Function<URI, T> transformation) {
 			return transformation.apply(address);
 		}
-
+		
+		@Override
 		public Page build() {
-			return new Page(address, links.build(), Collections.emptySet());
-		}
-
-		public Builder link(final URI link) {
-			links.add(link);
-			return this;
+			return new Page(address, links.build(), resources.build());
 		}
 		
-		public Builder resource(final URI resource) {
+		@Override
+		public PageBuilder<Page> link(final URI link) {
+			links.add(normalize(link));
+			return this;
+		}
+				
+		@Override
+		public PageBuilder<Page> resource(final URI resource) {
 			resources.add(resource);
 			return this;
 		}
+	}
+	
+	private static URI normalize(final URI uri) {
+		return URI.create(uri.toString().replaceAll("/$", ""));
 	}
 }

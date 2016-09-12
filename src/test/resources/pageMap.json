@@ -1,8 +1,38 @@
 {
 	"http://localhost:8000": {
-		"resources": [],
 		"links": [
+			"http://www.google.com",
+			"http://localhost:8000/1.html",
+			"http://localhost:8000/2.html",
+			"http://localhost:8000/allSamples.html"
+		],
+		"resources": [
+			"http://startupnewsroom.com/wp-content/uploads/2016/08/monzo_vert_lightbg.png"
+		]
+	},
+	"http://localhost:8000/1.html": {
+		"links": [
+			"http://localhost:8000"
+		],
+		"resources": []
+	},
+	"http://localhost:8000/2.html": {
+		"links": [
+			"http://localhost:8000/1.html"
+		],
+		"resources": []
+	},
+	"http://localhost:8000/allSamples.html": {
+		"links": [
+			"http://localhost:8000",
+			"http://localhost:8000/2.html",
 			"http://www.google.com"
+		],
+		"resources": [
+			"http://google-code-prettify.googlecode.com/svn/trunk/src/prettify.css",
+			"ios-app://305343404/tumblr/x-callback-url/blog?blogName=tomblomfield",
+			"http://www.gravatar.com/avatar/c833be5582482777b51b8fc73e8b0586?s=128&d=identicon&r=PG",
+			"http://assets.tumblr.com/assets/scripts/tumblelog_post_message_queue.js?_v=cf140c0f1704d59bad98d3be7adddfde"
 		]
 	}
 }
