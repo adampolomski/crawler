@@ -2,7 +2,12 @@ package org.nightcrawler.application;
 
 import java.net.URI;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 
 import org.nightcrawler.domain.crawler.Crawler;
 import org.nightcrawler.domain.crawler.Page;
@@ -23,10 +28,10 @@ public class Controller {
 	}
 
 	private String render(final Set<Page> pages) {
-		final StringBuffer buffer = new StringBuffer("{");
-		buffer.append(pages.size());
-		pages.stream().forEach(p -> buffer.append("a"));
-		buffer.append("}");
-		return buffer.toString();
+		final JsonObjectBuilder value = Json.createObjectBuilder();
+		final Set<Consumer<JsonObjectBuilder>> jsonPages = pages.parallelStream()
+				.map(page -> page.render(new JsonAppenderRenderer())).collect(Collectors.toSet());
+		jsonPages.forEach(p -> p.accept(value));
+		return value.build().toString();
 	}
 }

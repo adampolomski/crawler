@@ -15,7 +15,7 @@ public class ConcurrentIndex<K, V> implements Index<K, V> {
 
 	@Override
 	public Optional<Consumer<V>> aquire(final K key) {
-		if (acquired.add(key)) {
+		if (acquired.add(key)) {			
 			return Optional.of(value -> Preconditions.checkState(indexed.add(value)));
 		}
 

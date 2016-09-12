@@ -5,6 +5,10 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
+
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableSet;
 
 public class Page {	
 	private final URI address;
@@ -26,37 +30,59 @@ public class Page {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((address == null) ? 0 : address.hashCode());
-		return result;
-	}
+    public int hashCode() {
+        return Objects.hash(address);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Page other = (Page) obj;
+        return Objects.equals(this.address, other.address);
+    }   
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Page other = (Page) obj;
-		if (address == null) {
-			if (other.address != null)
-				return false;
-		} else if (!address.equals(other.address))
-			return false;
-		return true;
+	public String toString() {
+		return MoreObjects.toStringHelper(this).add("address", address).add("links", links).add("resources", resources)
+				.toString();
 	}
 
-	public static Builder builder() {
-		return new Builder();
+	public static Builder builder(final URI address) {
+		return new Builder(address);
 	}
 	
 	public static class Builder {
-		public Page build(final URI address) {
-			return new Page(address, Collections.emptySet(), Collections.emptySet());
+		private final URI address;
+		private final ImmutableSet.Builder<URI> links;
+		private final ImmutableSet.Builder<URI> resources;
+		
+		private Builder(final URI address) {
+			this.address = address;
+			this.links = ImmutableSet.builder();
+			this.resources = ImmutableSet.builder();
+		}
+		
+		public <T> T forAddress(final Function<URI, T> transformation) {
+			return transformation.apply(address);
+		}
+
+		public Page build() {
+			return new Page(address, links.build(), Collections.emptySet());
+		}
+
+		public Builder link(final URI link) {
+			links.add(link);
+			return this;
+		}
+		
+		public Builder resource(final URI resource) {
+			resources.add(resource);
+			return this;
 		}
 	}
 }

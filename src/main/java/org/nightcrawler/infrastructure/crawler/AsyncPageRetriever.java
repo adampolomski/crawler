@@ -24,7 +24,7 @@ public class AsyncPageRetriever extends PageRetriever {
 		asyncHttpClient.prepareGet(uri.toString()).execute(new AsyncCompletionHandler<Response>() {
 			@Override
 			public Response onCompleted(final Response response) throws Exception {
-				asyncParser.parse(response.getResponseBody(), handler);
+				asyncParser.parse(response.getResponseBody(), Page.builder(uri), handler);
 				return response;
 			}
 

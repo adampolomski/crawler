@@ -1,9 +1,8 @@
 {
-	"/": {
-		"resources": [
-			"",
-			"as"
-		],
-		"links": []
+	"http://localhost:8000": {
+		"resources": [],
+		"links": [
+			"http://www.google.com"
+		]
 	}
 }

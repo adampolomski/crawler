@@ -1,11 +1,13 @@
 package org.nightcrawler;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.util.Optional;
 import java.util.Scanner;
 
 import org.apache.commons.io.IOUtils;
@@ -17,7 +19,6 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Optional;
 import com.google.common.base.Verify;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -25,11 +26,11 @@ import com.sun.net.httpserver.HttpServer;
 
 public class ApplicationTest {
 
-	private static final Optional<String> JAR_PATH = Optional.fromNullable(System.getProperty("nightcrawler.jar.path"));
+	private static final Optional<File> JAR = Optional.ofNullable(System.getProperty("nightcrawler.jar.path")).map(File::new);
 
 	@Before
 	public void checkJar() {
-		Assume.assumeTrue(JAR_PATH.isPresent());
+		Assume.assumeTrue(JAR.map(File::exists).orElse(false));
 	}
 
 	public HttpServer httpServer() throws IOException {
@@ -52,7 +53,7 @@ public class ApplicationTest {
 	}
 
 	private String executeCrawler() throws IOException, InterruptedException {
-		final Process ps = Runtime.getRuntime().exec(new String[] { "java", "-jar", JAR_PATH.get(), "http://localhost:8000" });
+		final Process ps = Runtime.getRuntime().exec(new String[] { "java", "-jar", JAR.map(File::getAbsolutePath).get(), "http://localhost:8000" });
 		Verify.verify(ps.waitFor() == 0);
 
 		try (final Scanner scanner = new Scanner(ps.getInputStream(), "utf-8")) {

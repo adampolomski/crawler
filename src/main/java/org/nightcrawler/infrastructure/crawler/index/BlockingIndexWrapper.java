@@ -5,10 +5,15 @@ import java.util.Set;
 import java.util.concurrent.Phaser;
 import java.util.function.Consumer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.annotations.VisibleForTesting;
 
 public class BlockingIndexWrapper<K, V> implements Index<K, V> {
 
+	private static final Logger LOG = LoggerFactory.getLogger(BlockingIndexWrapper.class);
+	
 	private final Index<K, V> delegate;
 	private final Phaser phaser;
 	
@@ -19,16 +24,19 @@ public class BlockingIndexWrapper<K, V> implements Index<K, V> {
 	}
 
 	@Override
-	public Optional<Consumer<V>> aquire(final K uri) {		
-		final Optional<Consumer<V>> writer = delegate.aquire(uri);
-		writer.ifPresent(c -> phaser.register());
-		return writer.map(w -> wrap(w));
+	public Optional<Consumer<V>> aquire(final K key) {
+		final Optional<Consumer<V>> writer = delegate.aquire(key);
+		writer.ifPresent(c -> {
+			phaser.register();
+			LOG.debug("Aquired key {}.", key.toString());
+		});
+		return writer.map(w -> w.andThen(deregister()));
 	}
 
-	private Consumer<V> wrap(final Consumer<V> writer) {		
-		return value -> {			
-			writer.accept(value);
+	private Consumer<V> deregister() {		
+		return value -> {						
 			phaser.arriveAndDeregister();
+			LOG.debug("Deregistered {}.", value.toString());
 		};
 	}
 
