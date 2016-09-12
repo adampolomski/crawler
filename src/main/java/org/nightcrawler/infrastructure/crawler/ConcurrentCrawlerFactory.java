@@ -6,9 +6,11 @@ import java.util.function.Supplier;
 import org.asynchttpclient.AsyncHttpClient;
 import org.nightcrawler.domain.crawler.Crawler;
 import org.nightcrawler.domain.crawler.Page;
+import org.nightcrawler.domain.crawler.PageRetriever;
+import org.nightcrawler.domain.crawler.PropagatingPageRetriever;
+import org.nightcrawler.domain.crawler.index.Index;
 import org.nightcrawler.infrastructure.crawler.index.BlockingIndexWrapper;
 import org.nightcrawler.infrastructure.crawler.index.ConcurrentIndex;
-import org.nightcrawler.infrastructure.crawler.index.Index;
 import org.nightcrawler.infrastructure.crawler.parser.AsyncParser;
 
 public class ConcurrentCrawlerFactory implements Supplier<Crawler> {

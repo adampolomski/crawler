@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.concurrent.Phaser;
 import java.util.function.Consumer;
 
+import org.nightcrawler.domain.crawler.index.Index;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

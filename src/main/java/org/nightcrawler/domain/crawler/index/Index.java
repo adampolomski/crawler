@@ -1,4 +1,4 @@
-package org.nightcrawler.infrastructure.crawler.index;
+package org.nightcrawler.domain.crawler.index;
 
 import java.util.Set;
 

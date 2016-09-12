@@ -17,7 +17,7 @@ public class JsonAppenderRenderer implements Renderer<Consumer<JsonObjectBuilder
 	
 	@Override
 	public Renderer<Consumer<JsonObjectBuilder>> address(final URI address) {
-		this.address = Optional.of(address.toString());
+		this.address = Optional.of(render(address));
 		return this;
 	}
 
@@ -33,7 +33,7 @@ public class JsonAppenderRenderer implements Renderer<Consumer<JsonObjectBuilder
 
 	private Renderer<Consumer<JsonObjectBuilder>> addUris(final String name, final Iterable<URI> uris) {
 		final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-		uris.forEach(uri -> arrayBuilder.add(uri.toString()));
+		uris.forEach(uri -> arrayBuilder.add(render(uri)));
 		value.add(name, arrayBuilder);
 		return this;
 	}
@@ -41,6 +41,10 @@ public class JsonAppenderRenderer implements Renderer<Consumer<JsonObjectBuilder
 	@Override
 	public Consumer<JsonObjectBuilder> build() {
 		return builder -> builder.add(address.orElseThrow(IllegalStateException::new), value);
+	}
+	
+	private static String render(final URI uri) {
+		return uri.toString().replaceAll("/$", "");
 	}
 
 }

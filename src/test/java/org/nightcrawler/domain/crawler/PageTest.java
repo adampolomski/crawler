@@ -13,44 +13,34 @@ import com.google.common.collect.Sets;
 
 public class PageTest {
 
+	private static final URI LINK_URI = URI.create("http://localhost:8000/1.html");
 	private static final URI IMG_URI = URI.create("http://localhost:8000/img.jpg");
 	private static final URI PAGE_URI = URI.create("http://localhost:8000/allSamples.html");
 
 	@Test
-	public void shouldDropTrailingLinkSlashes() {
+	public void shouldBuildPage() {
 		// when
-		final Page page = Page.builder(PAGE_URI).link(URI.create("http://localhost:8000/"))
+		final Page page = Page.builder(PAGE_URI).link(LINK_URI)
 				.resource(IMG_URI).build();
 
 		// then
 		Assert.assertEquals(ImmutableMap.of("a", PAGE_URI, 
-				"l", ImmutableSet.of(URI.create("http://localhost:8000")),
+				"l", ImmutableSet.of(LINK_URI),
 				"r", ImmutableSet.of(IMG_URI)),
 				page.render(mapRenderer()));
-	}
-	
-	@Test
-	public void shouldDropTrailingAddressSlashes() {
-		// when
-		final Page trailingSlashPage = Page.builder(URI.create("http://localhost:8000/")).build();
-		final Page nonTralingSlashPage = Page.builder(URI.create("http://localhost:8000")).build();
-		
-		// then
-		Assert.assertTrue(trailingSlashPage.equals(nonTralingSlashPage));
-	}
+	}		
 	
 	@Test
 	public void shouldVisitLinks() {
 		// given
-		final URI link = URI.create("http://localhost:8000/1.html");
-		final Page page = Page.builder(PAGE_URI).link(link).build();
+		final Page page = Page.builder(PAGE_URI).link(LINK_URI).build();
 
 		// when
 		final Set<URI> visitedLinks = Sets.newHashSet();
 		page.visitLinks(visitedLinks::add);
 		
 		// then
-		Assert.assertEquals(ImmutableSet.of(link), visitedLinks);		
+		Assert.assertEquals(ImmutableSet.of(LINK_URI), visitedLinks);		
 	}
 
 	private static Renderer<Map<String, Object>> mapRenderer() {

@@ -32,6 +32,6 @@ public class CrawlerConfig {
 	@Bean
 	public DefaultAsyncHttpClient httpClient() {
 		return new DefaultAsyncHttpClient(
-				new DefaultAsyncHttpClientConfig.Builder().setFollowRedirect(true).build());
+				new DefaultAsyncHttpClientConfig.Builder().setFollowRedirect(false).build());
 	}
 }

@@ -1,9 +1,7 @@
-package org.nightcrawler.infrastructure.crawler;
+package org.nightcrawler.domain.crawler;
 
 import java.net.URI;
 import java.util.function.Consumer;
-
-import org.nightcrawler.domain.crawler.Page;
 
 public abstract class PageRetriever {
 

@@ -7,6 +7,7 @@ import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.Response;
 import org.nightcrawler.domain.crawler.Page;
+import org.nightcrawler.domain.crawler.PageRetriever;
 import org.nightcrawler.infrastructure.crawler.parser.AsyncParser;
 
 public class AsyncPageRetriever extends PageRetriever {

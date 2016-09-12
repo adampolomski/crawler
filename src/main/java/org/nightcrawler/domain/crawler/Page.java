@@ -55,7 +55,7 @@ public class Page {
 	}
 
 	public static PageBuilder<Page> builder(final URI address) {
-		return new Builder(normalize(address));
+		return new Builder(address);
 	}
 	
 	public static class Builder implements PageBuilder<Page> {
@@ -81,7 +81,7 @@ public class Page {
 		
 		@Override
 		public PageBuilder<Page> link(final URI link) {
-			links.add(normalize(link));
+			links.add(link);
 			return this;
 		}
 				
@@ -90,9 +90,5 @@ public class Page {
 			resources.add(resource);
 			return this;
 		}
-	}
-	
-	private static URI normalize(final URI uri) {
-		return URI.create(uri.toString().replaceAll("/$", ""));
 	}
 }
