@@ -2,7 +2,6 @@ package org.nightcrawler.application;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -18,19 +17,31 @@ import com.google.common.base.Preconditions;
 
 public class Controller {
 
+	private static final String PROMPT = "Usage: java -jar crawler.jar [page URL]";
+	
 	private final Supplier<Crawler> crawlerFactory;
 
 	public Controller(final Supplier<Crawler> crawlerFactory) {
 		this.crawlerFactory = Preconditions.checkNotNull(crawlerFactory);
 	}
 
-	public String generatePageMap(final String[] args) throws ValidationException {	
-		if (args.length < 1) {throw new ValidationException();}	
-		try {			
-			return generatePageMap(new URL(Optional.ofNullable(args[0]).orElseThrow(ValidationException::new)));
+	public String generatePageMap(final String[] args) {					
+			try {
+				return generatePageMap(extractInput(args));
+			} catch (final ValidationException e) {
+				return PROMPT;
+			}
+	}
+	
+	private static URL extractInput(final String[] args) throws ValidationException {
+		if (args.length < 1) {
+			throw new ValidationException();
+		}
+		try {
+			return new URL(args[0]);
 		} catch (final MalformedURLException e) {
 			throw new ValidationException(e);
-		}		
+		}
 	}
 
 	private String generatePageMap(final URL uri) {
@@ -41,8 +52,7 @@ public class Controller {
 
 	private String render(final Set<Page> pages) {
 		final JsonObjectBuilder value = Json.createObjectBuilder();
-		final Set<Consumer<JsonObjectBuilder>> jsonPages = pages.parallelStream()
-				.map(page -> page.render(new JsonAppenderRenderer())).collect(Collectors.toSet());
+		final Set<Consumer<JsonObjectBuilder>> jsonPages = pages.parallelStream().map(page -> page.render(new JsonAppenderRenderer())).collect(Collectors.toSet());
 		jsonPages.forEach(p -> p.accept(value));
 		return value.build().toString();
 	}

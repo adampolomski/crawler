@@ -1,4 +1,4 @@
-package org.nightcrawler.domain.crawler;
+package org.nightcrawler.domain.crawler.retriever;
 
 import java.net.URL;
 import java.util.Optional;
@@ -9,7 +9,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.nightcrawler.UrlUtils;
+import org.nightcrawler.domain.crawler.Page;
 import org.nightcrawler.domain.crawler.index.Aquireable;
+import org.nightcrawler.domain.crawler.retriever.PageRetriever;
+import org.nightcrawler.domain.crawler.retriever.PropagatingPageRetriever;
 import org.nightcrawler.domain.crawler.strategy.HandlingStrategy;
 
 public class PropagatingPageRetrieverTest {
@@ -17,7 +20,7 @@ public class PropagatingPageRetrieverTest {
 	private static final URL PAGE_URL = UrlUtils.url("http://localhost:8000");
 
 	@Mock
-	private PageRetriever mockDelegateRetriever;
+	private PageRetriever<Page> mockDelegateRetriever;
 
 	@Mock
 	private Aquireable<URL, Page> mockIndex;
@@ -30,7 +33,7 @@ public class PropagatingPageRetrieverTest {
 	@Test
 	public void shouldPropagateIfAcquired() {
 		// given
-		final PropagatingPageRetriever retriever = new PropagatingPageRetriever(mockDelegateRetriever, mockIndex);
+		final PropagatingPageRetriever<Page> retriever = new PropagatingPageRetriever<Page>(mockDelegateRetriever, mockIndex);
 		
 		Mockito.when(mockIndex.aquire(PAGE_URL)).thenReturn(Optional.of(p -> {}));		
 		
@@ -44,7 +47,7 @@ public class PropagatingPageRetrieverTest {
 	@Test
 	public void shouldNotPropagateIfNotAcquired() {
 		// given
-		final PropagatingPageRetriever retriever = new PropagatingPageRetriever(mockDelegateRetriever, mockIndex);
+		final PropagatingPageRetriever<Page> retriever = new PropagatingPageRetriever<Page>(mockDelegateRetriever, mockIndex);
 		Mockito.when(mockIndex.aquire(PAGE_URL)).thenReturn(Optional.empty());
 
 		// when

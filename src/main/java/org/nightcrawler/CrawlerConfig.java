@@ -11,6 +11,7 @@ import org.nightcrawler.domain.crawler.Crawler;
 import org.nightcrawler.infrastructure.crawler.ConcurrentCrawlerFactory;
 import org.nightcrawler.infrastructure.crawler.parser.AsyncParser;
 import org.nightcrawler.infrastructure.crawler.parser.JsoupPageParser;
+import org.nightcrawler.infrastructure.crawler.retriever.AsyncCompletionHandlerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,19 +20,19 @@ public class CrawlerConfig {
 
 	@Bean
 	Controller controller() {
-		Supplier<Crawler> crawlerFactory = new ConcurrentCrawlerFactory(httpClient(),
-				new AsyncParser(new JsoupPageParser(), parserExecutorService()));
+		final AsyncParser asyncParser = new AsyncParser(new JsoupPageParser(), parserExecutorService());
+		final AsyncCompletionHandlerFactory completionHandlerFactory = new AsyncCompletionHandlerFactory(asyncParser, parserExecutorService());
+		final Supplier<Crawler> crawlerFactory = new ConcurrentCrawlerFactory(httpClient(), completionHandlerFactory);
 		return new Controller(crawlerFactory);
 	}
 
 	@Bean
 	public ExecutorService parserExecutorService() {
-		return Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		return Executors.newWorkStealingPool();
 	}
 
 	@Bean
 	public DefaultAsyncHttpClient httpClient() {
-		return new DefaultAsyncHttpClient(
-				new DefaultAsyncHttpClientConfig.Builder().setFollowRedirect(false).build());
+		return new DefaultAsyncHttpClient(new DefaultAsyncHttpClientConfig.Builder().setFollowRedirect(false).build());
 	}
 }

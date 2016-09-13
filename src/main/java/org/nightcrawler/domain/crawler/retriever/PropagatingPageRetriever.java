@@ -1,4 +1,4 @@
-package org.nightcrawler.domain.crawler;
+package org.nightcrawler.domain.crawler.retriever;
 
 import java.net.URL;
 import java.util.function.Consumer;
@@ -15,24 +15,24 @@ import com.google.common.base.Preconditions;
  * @author Adam Polomski
  *
  */
-public class PropagatingPageRetriever extends PageRetriever {
+public class PropagatingPageRetriever<P> extends PageRetriever<P> {
 
-	private final PageRetriever delegateRetriever;
-	private final Aquireable<URL, Page> index;
+	private final PageRetriever<P> delegateRetriever;
+	private final Aquireable<URL, P> index;
 
-	public PropagatingPageRetriever(final PageRetriever delegateRetriever, final Aquireable<URL, Page> index) {
+	public PropagatingPageRetriever(final PageRetriever<P> delegateRetriever, final Aquireable<URL, P> index) {
 		this.delegateRetriever = Preconditions.checkNotNull(delegateRetriever);
 		this.index = Preconditions.checkNotNull(index);
 	}
 
 	@Override
-	public void crawl(final URL URL, final HandlingStrategyBuilder<Page> strategyBuilder) {		
+	public void crawl(final URL URL, final HandlingStrategyBuilder<P> strategyBuilder) {		
 		index.aquire(URL).ifPresent(writer -> delegateRetriever.crawl(URL,
 				delegateStrategyBuilder(strategyBuilder, URL, writer)));
 	}
 
-	private HandlingStrategyBuilder<Page> delegateStrategyBuilder(final HandlingStrategyBuilder<Page> strategyBuilder,
-			final URL normalizedURL, final Consumer<Page> writer) {
+	private HandlingStrategyBuilder<P> delegateStrategyBuilder(final HandlingStrategyBuilder<P> strategyBuilder,
+			final URL normalizedURL, final Consumer<P> writer) {
 		return LinkWatchingStrategy.wrap(strategyBuilder.copy(normalizedURL).handler(writer), link -> {
 			if (link.getHost().equals(normalizedURL.getHost()))
 				crawl(link, strategyBuilder.copy(link));			

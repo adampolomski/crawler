@@ -2,25 +2,20 @@ package org.nightcrawler.infrastructure.crawler.parser;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.internal.util.collections.Sets;
 import org.nightcrawler.UrlUtils;
 import org.nightcrawler.domain.crawler.strategy.HandlingStrategy;
+import org.nightcrawler.domain.crawler.strategy.IntrospectingPageBuilder;
 import org.nightcrawler.domain.crawler.strategy.PageBuilder;
 import org.springframework.core.io.ClassPathResource;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
 
 public class JsoupPageParserTest {
 
@@ -30,7 +25,7 @@ public class JsoupPageParserTest {
 	public void shouldParsePage() throws IOException {
 		// given
 		final JsoupPageParser parser = new JsoupPageParser();
-		final PageBuilder<Map<String, Object>> mapPagebuilder = mapPagebuilder(PAGE_URL);
+		final PageBuilder<Map<String, Object>> mapPagebuilder = mapPagebuilder();
 		
 		// when		
 		parser.parse(content(PAGE_URL), HandlingStrategy.<Map<String, Object>>builder(PAGE_URL).build(mapPagebuilder));
@@ -48,33 +43,8 @@ public class JsoupPageParserTest {
 
 	}
 
-	private PageBuilder<Map<String, Object>> mapPagebuilder(final URL pageURL) {
-		return new PageBuilder<Map<String, Object>>(){
-
-			final Map<String, Object> page = Maps.newHashMap();						
-
-			@Override
-			public PageBuilder<Map<String, Object>> link(final URL link) {	
-				addURL("links", link);
-				return this;
-			}
-
-			@SuppressWarnings("unchecked")
-			private void addURL(final String name, final Object link) {
-				((Set<String>)page.computeIfAbsent(name, l->Sets.newSet())).add(link.toString());
-			}
-
-			@Override
-			public PageBuilder<Map<String, Object>> resource(final URI resource) {
-				addURL("resources", resource);
-				return this;
-			}
-
-			@Override
-			public Map<String, Object> build(URL address) {
-				page.put("address", pageURL);
-				return page;
-			}};
+	private PageBuilder<Map<String, Object>> mapPagebuilder() {
+		return new IntrospectingPageBuilder();
 	}
 
 	private String content(final URL identifier) throws IOException {
