@@ -8,6 +8,12 @@ import java.util.function.Function;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
+/**
+ * Watches incoming lings. Fires an event for every one.
+ * 
+ * @author Adam Polomski
+ *
+ */
 public class LinkWatchingStrategy extends HandlingStrategy {
 
 	private final Consumer<URL> linkHandler;

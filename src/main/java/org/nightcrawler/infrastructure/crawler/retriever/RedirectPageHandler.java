@@ -3,6 +3,7 @@ package org.nightcrawler.infrastructure.crawler.retriever;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -19,12 +20,12 @@ import com.google.common.base.Preconditions;
 class RedirectPageHandler extends DecoratingPageHandler {
 
 	private final HandlingStrategyBuilder<Page> strategyBuilder;
-	private final ExecutorService executorService;
+	private final Executor executor;
 
-	RedirectPageHandler(final HandlingStrategyBuilder<Page> strategyBuilder, final ExecutorService executorService, final AsyncCompletionHandler<Response> fallback) {
+	RedirectPageHandler(final HandlingStrategyBuilder<Page> strategyBuilder, final Executor executorService, final AsyncCompletionHandler<Response> fallback) {
 		super(fallback);
 		this.strategyBuilder = Preconditions.checkNotNull(strategyBuilder);
-		this.executorService = Preconditions.checkNotNull(executorService);
+		this.executor = Preconditions.checkNotNull(executorService);
 	}
 
 	@Override
@@ -32,7 +33,7 @@ class RedirectPageHandler extends DecoratingPageHandler {
 		final int statusCode = response.getStatusCode();
 		if (statusCode == 301 || statusCode == 302) { // Redirect
 			final HandlingStrategy strategy = strategyBuilder.build(RedirectPage.builder());
-			executorService.execute(() -> parseRedirect(response, strategy));
+			executor.execute(() -> parseRedirect(response, strategy));
 		} else {
 			return fallback.apply(response);
 		}

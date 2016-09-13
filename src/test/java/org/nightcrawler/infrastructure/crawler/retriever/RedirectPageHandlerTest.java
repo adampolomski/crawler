@@ -2,8 +2,7 @@ package org.nightcrawler.infrastructure.crawler.retriever;
 
 import java.net.URL;
 import java.util.Map;
-import java.util.concurrent.Executors;
-
+import java.util.concurrent.Executor;
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.Response;
 import org.junit.Assert;
@@ -45,7 +44,7 @@ public class RedirectPageHandlerTest {
 	@Test
 	public void shouldProcessRedirect() throws Exception {
 		// given
-		final RedirectPageHandler handler = new RedirectPageHandler(mockStrategyBuilder, Executors.newSingleThreadExecutor(), mockFallback);
+		final RedirectPageHandler handler = new RedirectPageHandler(mockStrategyBuilder, sameThreadExecutor(), mockFallback);
 		final PageBuilder<Map<String, Object>> mapPagebuilder = mapPagebuilder();
 		Mockito.when(mockResponse.getStatusCode()).thenReturn(301);
 		Mockito.when(mockResponse.getHeader("Location")).thenReturn("http://www.google.com/redirect");
@@ -70,7 +69,7 @@ public class RedirectPageHandlerTest {
 	@Test
 	public void shouldFallBack() throws Exception {
 		// given
-		final RedirectPageHandler handler = new RedirectPageHandler(HandlingStrategy.builder(PAGE_URL), Executors.newSingleThreadExecutor(), mockFallback);
+		final RedirectPageHandler handler = new RedirectPageHandler(HandlingStrategy.builder(PAGE_URL), sameThreadExecutor(), mockFallback);
 		Mockito.when(mockResponse.getStatusCode()).thenReturn(200);
 		
 		// when
@@ -79,5 +78,14 @@ public class RedirectPageHandlerTest {
 		// then
 		Mockito.verify(mockFallback).onCompleted(mockResponse);
 		Mockito.verifyZeroInteractions(mockStrategyBuilder);
+	}
+
+	private static Executor sameThreadExecutor() {
+		return new Executor() {
+			@Override
+			public void execute(final Runnable command) {
+				command.run();				
+			}						
+		};
 	}
 }

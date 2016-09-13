@@ -5,6 +5,12 @@ import java.net.URL;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * Binds together a PageBuilder and a Consumer for it's output.
+ * 
+ * @author Adam Polomski
+ *
+ */
 class BuildingStrategy<P> extends HandlingStrategy {
 	private final PageBuilder<P> builder;
 	private final Consumer<P> handler;

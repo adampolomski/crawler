@@ -5,6 +5,12 @@ import java.util.function.Function;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * Base strategy. Fulfills the contract, but does nothing on it's own.
+ * 
+ * @author Adam Polomski
+ *
+ */
 class BaseStrategy extends HandlingStrategy {
 
 	private final URL address;
