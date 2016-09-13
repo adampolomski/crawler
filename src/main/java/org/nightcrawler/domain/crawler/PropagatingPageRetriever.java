@@ -9,6 +9,12 @@ import org.nightcrawler.domain.crawler.strategy.LinkWatchingStrategy;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * Propagates crawling to all linked pages.
+ * 
+ * @author Adam Polomski
+ *
+ */
 public class PropagatingPageRetriever extends PageRetriever {
 
 	private final PageRetriever delegateRetriever;

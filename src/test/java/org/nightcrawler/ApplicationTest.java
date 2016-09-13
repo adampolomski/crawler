@@ -24,6 +24,12 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
+/**
+ * Full functional test. Uses the jar to crawl a test website. Data fed by mock HTTP server.
+ * 
+ * @author Adam Polomski
+ *
+ */
 public class ApplicationTest {
 
 	private static final Optional<File> JAR = Optional.ofNullable(System.getProperty("nightcrawler.jar.path")).map(File::new);

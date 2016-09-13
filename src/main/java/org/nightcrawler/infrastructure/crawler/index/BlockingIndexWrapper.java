@@ -11,6 +11,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 
+/**
+ * Encapsulates all synchronization logic. Retrieving all content will block until worker threads are done.
+ * 
+ * @author Adam Polomski
+ */
 public class BlockingIndexWrapper<K, V> implements Index<K, V> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(BlockingIndexWrapper.class);

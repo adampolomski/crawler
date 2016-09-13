@@ -1,6 +1,7 @@
 package org.nightcrawler.application;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -22,7 +23,11 @@ public class Controller {
 		this.crawlerFactory = Preconditions.checkNotNull(crawlerFactory);
 	}
 
-	public String generatePageMap(final URI uri) {
+	public String generatePageMap(final String argument) throws URISyntaxException {
+		return generatePageMap(new URI(argument));
+	}
+
+	private String generatePageMap(final URI uri) {
 		final Set<Page> pages = crawlerFactory.get().crawl(uri);
 		return render(pages);
 	}

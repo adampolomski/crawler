@@ -6,6 +6,12 @@ import org.nightcrawler.domain.crawler.strategy.HandlingStrategy;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * Wraps parser with asynchronous behavior.
+ * 
+ * @author Adam Polomski
+ *
+ */
 public class AsyncParser {
 
 	private final PageParser delegate;

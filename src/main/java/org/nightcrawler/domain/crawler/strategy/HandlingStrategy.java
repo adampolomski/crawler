@@ -6,6 +6,12 @@ import java.util.function.Function;
 
 import com.google.common.collect.ImmutableSet;
 
+/**
+ * Defines what to do with data parsed out of HTTP responses.
+ * 
+ * @author Adam Polomski
+ *
+ */
 public abstract class HandlingStrategy {
 
 	public HandlingStrategy link(final URI link) { return this;	};

@@ -11,6 +11,12 @@ import org.nightcrawler.domain.crawler.RegularPage;
 import org.nightcrawler.domain.crawler.strategy.HandlingStrategyBuilder;
 import org.nightcrawler.infrastructure.crawler.parser.AsyncParser;
 
+/**
+ * Retrieves data with a given HTTP client and uses a specified parser to feed the processing strategy.
+ * 
+ * @author Adam Polomski
+ *
+ */
 public class AsyncPageRetriever extends PageRetriever {
 
 	private final AsyncHttpClient asyncHttpClient;
@@ -26,7 +32,7 @@ public class AsyncPageRetriever extends PageRetriever {
 		asyncHttpClient.prepareGet(uri.toString()).execute(new AsyncCompletionHandler<Response>() {
 			@Override
 			public Response onCompleted(final Response response) throws Exception {			
-				if (response.getStatusCode() == 301) {		
+				if (response.getStatusCode() == 301) { // Redirect	
 					strategyBuilder.build(RedirectPage.builder()).link(location(uri, response)).process();
 				}
 				else {
