@@ -1,6 +1,7 @@
 package org.nightcrawler.domain.crawler.strategy;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -14,15 +15,15 @@ import com.google.common.collect.ImmutableSet;
  */
 public abstract class HandlingStrategy {
 
-	public HandlingStrategy link(final URI link) { return this;	};
+	public HandlingStrategy link(final URL link) { return this;	};
 
 	public HandlingStrategy resource(final URI link) { return this;	};
 
-	public abstract <T> T forAddress(final Function<URI, T> transformation);
+	public abstract <T> T forAddress(final Function<URL, T> transformation);
 
 	public void process() {};
 
-	public static <P> HandlingStrategyBuilder<P> builder(final URI address) {
+	public static <P> HandlingStrategyBuilder<P> builder(final URL address) {
 		return new BaseBuilder<>(new BaseStrategy(address), ImmutableSet.builder());
 	}
 	
@@ -42,7 +43,7 @@ public abstract class HandlingStrategy {
 		}
 
 		@Override
-		public HandlingStrategyBuilder<P> copy(final URI address) {
+		public HandlingStrategyBuilder<P> copy(final URL address) {
 			return new BaseBuilder<>(new BaseStrategy(address), ImmutableSet.<Consumer<P>>builder().addAll(handlers.build()));
 		}
 		

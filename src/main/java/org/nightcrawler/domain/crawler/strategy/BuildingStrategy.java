@@ -1,6 +1,7 @@
 package org.nightcrawler.domain.crawler.strategy;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -16,11 +17,11 @@ class BuildingStrategy<P> extends HandlingStrategy {
 	}
 
 	@Override
-	public <T> T forAddress(final Function<URI, T> transformation) {
+	public <T> T forAddress(final Function<URL, T> transformation) {
 		return base.forAddress(transformation);
 	}
 
-	public HandlingStrategy link(final URI link) {
+	public HandlingStrategy link(final URL link) {
 		base.link(link);
 		builder.link(link);
 		return this;
@@ -33,8 +34,8 @@ class BuildingStrategy<P> extends HandlingStrategy {
 	}
 
 	public void process() {
-		final URI uri = base.forAddress(Function.identity());
-		handler.accept(builder.build(uri));
+		final URL URL = base.forAddress(Function.identity());
+		handler.accept(builder.build(URL));
 		base.process();
 	}
 }

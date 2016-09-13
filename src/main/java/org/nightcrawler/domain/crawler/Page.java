@@ -1,15 +1,15 @@
 package org.nightcrawler.domain.crawler;
 
-import java.net.URI;
+import java.net.URL;
 import java.util.Objects;
 
 import com.google.common.base.Preconditions;
 
 public abstract class Page {
 
-	protected final URI address;
+	protected final URL address;
 
-	public Page(final URI address) {
+	public Page(final URL address) {
 		this.address = Preconditions.checkNotNull(address);
 	}
 

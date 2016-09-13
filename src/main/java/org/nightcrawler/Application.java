@@ -1,8 +1,7 @@
 package org.nightcrawler;
 
-import java.net.URISyntaxException;
-
 import org.nightcrawler.application.Controller;
+import org.nightcrawler.application.ValidationException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class Application {
@@ -11,8 +10,8 @@ public class Application {
 		try(final AnnotationConfigApplicationContext ctx = startContext()) {
 			final Controller controller = ctx.getBean(Controller.class);
 			try {
-				System.out.print(controller.generatePageMap(args[0]));
-			} catch (URISyntaxException e) {
+				System.out.print(controller.generatePageMap(args));
+			} catch (final ValidationException e) {
 				System.out.println("Usage: java -jar crawler.jar [page URI]");
 			}	
 		}					

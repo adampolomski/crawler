@@ -1,6 +1,7 @@
 package org.nightcrawler.domain.crawler.strategy;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -9,21 +10,21 @@ import com.google.common.base.Preconditions;
 
 public class LinkWatchingStrategy extends HandlingStrategy {
 
-	private final Consumer<URI> linkHandler;
+	private final Consumer<URL> linkHandler;
 	private final HandlingStrategy base;
 
 	@VisibleForTesting
-	LinkWatchingStrategy(final HandlingStrategy base, final Consumer<URI> linkHandler) {
+	LinkWatchingStrategy(final HandlingStrategy base, final Consumer<URL> linkHandler) {
 		this.linkHandler = Preconditions.checkNotNull(linkHandler);
 		this.base = Preconditions.checkNotNull(base);
 	}
 
 	@Override
-	public <T> T forAddress(final Function<URI, T> transformation) {
+	public <T> T forAddress(final Function<URL, T> transformation) {
 		return base.forAddress(transformation);
 	}
 
-	public HandlingStrategy link(final URI link) {
+	public HandlingStrategy link(final URL link) {
 		base.link(link);
 		linkHandler.accept(link);
 		return this;
@@ -38,7 +39,7 @@ public class LinkWatchingStrategy extends HandlingStrategy {
 		base.process();
 	}
 
-	public static <P> HandlingStrategyBuilder<P> wrap(final HandlingStrategyBuilder<P> builder, final Consumer<URI> linkHandler) {
+	public static <P> HandlingStrategyBuilder<P> wrap(final HandlingStrategyBuilder<P> builder, final Consumer<URL> linkHandler) {
 		return new HandlingStrategyBuilder<P>() {
 			@Override
 			public HandlingStrategy build(final PageBuilder<P> pageBuilder) {
@@ -46,7 +47,7 @@ public class LinkWatchingStrategy extends HandlingStrategy {
 			}
 
 			@Override
-			public HandlingStrategyBuilder<P> copy(final URI address) {				
+			public HandlingStrategyBuilder<P> copy(final URL address) {				
 				return wrap(builder.copy(address), linkHandler);
 			}
 

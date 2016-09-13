@@ -1,6 +1,9 @@
 package org.nightcrawler.infrastructure.crawler;
 
-import java.net.URI;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Optional;
+
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.Response;
@@ -8,6 +11,7 @@ import org.nightcrawler.domain.crawler.Page;
 import org.nightcrawler.domain.crawler.PageRetriever;
 import org.nightcrawler.domain.crawler.RedirectPage;
 import org.nightcrawler.domain.crawler.RegularPage;
+import org.nightcrawler.domain.crawler.strategy.HandlingStrategy;
 import org.nightcrawler.domain.crawler.strategy.HandlingStrategyBuilder;
 import org.nightcrawler.infrastructure.crawler.parser.AsyncParser;
 
@@ -28,12 +32,14 @@ public class AsyncPageRetriever extends PageRetriever {
 	}
 
 	@Override
-	public void crawl(final URI uri, final HandlingStrategyBuilder<Page> strategyBuilder) {
-		asyncHttpClient.prepareGet(uri.toString()).execute(new AsyncCompletionHandler<Response>() {
+	public void crawl(final URL url, final HandlingStrategyBuilder<Page> strategyBuilder) {
+		asyncHttpClient.prepareGet(url.toString()).execute(new AsyncCompletionHandler<Response>() {
 			@Override
 			public Response onCompleted(final Response response) throws Exception {			
 				if (response.getStatusCode() == 301) { // Redirect	
-					strategyBuilder.build(RedirectPage.builder()).link(location(uri, response)).process();
+					final HandlingStrategy strategy = strategyBuilder.build(RedirectPage.builder());
+					location(url, response).ifPresent(strategy::link);
+					strategy.process();
 				}
 				else {
 					asyncParser.parse(response.getResponseBody(), strategyBuilder.build(RegularPage.builder()));
@@ -41,8 +47,12 @@ public class AsyncPageRetriever extends PageRetriever {
 				return response;
 			}
 
-			private URI location(final URI uri, final Response response) {
-				return uri.resolve(URI.create(response.getHeader("Location")));
+			private Optional<URL> location(final URL url, final Response response) {		
+				try {
+					return Optional.of(new URL(url, response.getHeader("Location")));
+				} catch (MalformedURLException e) {
+					return Optional.empty();
+				}
 			}
 			
 			@Override

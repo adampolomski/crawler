@@ -1,6 +1,6 @@
 package org.nightcrawler.infrastructure.crawler;
 
-import java.net.URI;
+import java.net.URL;
 import java.util.function.Supplier;
 
 import org.asynchttpclient.AsyncHttpClient;
@@ -25,18 +25,18 @@ public class ConcurrentCrawlerFactory implements Supplier<Crawler> {
 
 	@Override
 	public Crawler get() {
-		return uri -> {
-			final Index<URI, Page> index = index();
-			retriever(index).crawl(uri);
+		return url -> {
+			final Index<URL, Page> index = index();
+			retriever(index).crawl(url);
 			return index.all();
 		};
 	}
 
-	private PageRetriever retriever(final Index<URI, Page> index) {
+	private PageRetriever retriever(final Index<URL, Page> index) {
 		return new PropagatingPageRetriever(new AsyncPageRetriever(httpClient, parser), index);		
 	}
 
-	private Index<URI, Page> index() {
+	private Index<URL, Page> index() {
 		return BlockingIndexWrapper.wrap(new ConcurrentIndex<>());		
 	}
 

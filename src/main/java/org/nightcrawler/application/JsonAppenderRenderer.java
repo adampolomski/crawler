@@ -1,6 +1,7 @@
 package org.nightcrawler.application;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -16,30 +17,30 @@ public class JsonAppenderRenderer implements Renderer<Consumer<JsonObjectBuilder
 	private Optional<String> address = Optional.empty();
 	
 	@Override
-	public Renderer<Consumer<JsonObjectBuilder>> address(final URI address) {
+	public Renderer<Consumer<JsonObjectBuilder>> address(final URL address) {
 		this.address = Optional.of(render(address));
 		return this;
 	}
 	
 	@Override
-	public Renderer<Consumer<JsonObjectBuilder>> redirect(final URI address) {
+	public Renderer<Consumer<JsonObjectBuilder>> redirect(final URL address) {
 		value.add("redirect", render(address));
 		return this;
 	}
 
 	@Override
-	public Renderer<Consumer<JsonObjectBuilder>> links(final Iterable<URI> links) {
-		return addUris("links", links);
+	public Renderer<Consumer<JsonObjectBuilder>> links(final Iterable<URL> links) {
+		return addPaths("links", links);
 	}
 
 	@Override
 	public Renderer<Consumer<JsonObjectBuilder>> resources(final Iterable<URI> resources) {
-		return addUris("resources", resources);
+		return addPaths("resources", resources);
 	}
 
-	private Renderer<Consumer<JsonObjectBuilder>> addUris(final String name, final Iterable<URI> uris) {
+	private Renderer<Consumer<JsonObjectBuilder>> addPaths(final String name, final Iterable<?> urls) {
 		final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-		uris.forEach(uri -> arrayBuilder.add(render(uri)));
+		urls.forEach(path -> arrayBuilder.add(path.toString()));
 		value.add(name, arrayBuilder);
 		return this;
 	}
@@ -49,7 +50,7 @@ public class JsonAppenderRenderer implements Renderer<Consumer<JsonObjectBuilder
 		return builder -> builder.add(address.orElseThrow(IllegalStateException::new), value);
 	}
 	
-	private static String render(final URI uri) {
-		return uri.toString().replaceAll("/$", "");
+	private static String render(final URL url) {
+		return url.toString();
 	}
 }

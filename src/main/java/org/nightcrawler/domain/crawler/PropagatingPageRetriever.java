@@ -1,6 +1,6 @@
 package org.nightcrawler.domain.crawler;
 
-import java.net.URI;
+import java.net.URL;
 import java.util.function.Consumer;
 
 import org.nightcrawler.domain.crawler.index.Aquireable;
@@ -18,29 +18,24 @@ import com.google.common.base.Preconditions;
 public class PropagatingPageRetriever extends PageRetriever {
 
 	private final PageRetriever delegateRetriever;
-	private final Aquireable<URI, Page> index;
+	private final Aquireable<URL, Page> index;
 
-	public PropagatingPageRetriever(final PageRetriever delegateRetriever, final Aquireable<URI, Page> index) {
+	public PropagatingPageRetriever(final PageRetriever delegateRetriever, final Aquireable<URL, Page> index) {
 		this.delegateRetriever = Preconditions.checkNotNull(delegateRetriever);
 		this.index = Preconditions.checkNotNull(index);
 	}
 
 	@Override
-	public void crawl(final URI uri, final HandlingStrategyBuilder<Page> strategyBuilder) {
-		final URI normalizedUri = normalize(uri);
-		index.aquire(normalizedUri).ifPresent(writer -> delegateRetriever.crawl(normalizedUri,
-				delegateStrategyBuilder(strategyBuilder, normalizedUri, writer)));
+	public void crawl(final URL URL, final HandlingStrategyBuilder<Page> strategyBuilder) {		
+		index.aquire(URL).ifPresent(writer -> delegateRetriever.crawl(URL,
+				delegateStrategyBuilder(strategyBuilder, URL, writer)));
 	}
 
 	private HandlingStrategyBuilder<Page> delegateStrategyBuilder(final HandlingStrategyBuilder<Page> strategyBuilder,
-			final URI normalizedUri, final Consumer<Page> writer) {
-		return LinkWatchingStrategy.wrap(strategyBuilder.copy(normalizedUri).handler(writer), link -> {
-			if (link.getHost().equals(normalizedUri.getHost()))
-				crawl(link, strategyBuilder.copy(link));
+			final URL normalizedURL, final Consumer<Page> writer) {
+		return LinkWatchingStrategy.wrap(strategyBuilder.copy(normalizedURL).handler(writer), link -> {
+			if (link.getHost().equals(normalizedURL.getHost()))
+				crawl(link, strategyBuilder.copy(link));			
 		});
-	}
-
-	private static URI normalize(final URI uri) {
-		return URI.create(uri.toString().replaceAll("/$", ""));
 	}
 }

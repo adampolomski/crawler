@@ -1,6 +1,7 @@
 package org.nightcrawler.domain.crawler.strategy;
 
-import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -10,12 +11,13 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.nightcrawler.UrlUtils;
 
 import com.google.common.collect.Sets;
 
 public class LinkWatchingStrategyTest {
 
-	private static final URI LINK_URI = URI.create("http://www.google.com");
+	private static final URL LINK_URL = UrlUtils.url("http://www.google.com");
 
 	@Mock
 	private HandlingStrategy mockBaseStrategy;
@@ -28,15 +30,15 @@ public class LinkWatchingStrategyTest {
 	@Test
 	public void shouldConsumeLink() {
 		// given
-		final Set<URI> processedLinks = Sets.newHashSet();
+		final Set<URL> processedLinks = Sets.newHashSet();
 		final LinkWatchingStrategy strategy = new LinkWatchingStrategy(mockBaseStrategy, processedLinks::add);
 
 		// when
-		strategy.link(LINK_URI);
+		strategy.link(LINK_URL);
 
 		// then
-		Assert.assertTrue(processedLinks.contains(LINK_URI));
-		Mockito.verify(mockBaseStrategy).link(LINK_URI);
+		Assert.assertTrue(processedLinks.contains(LINK_URL));
+		Mockito.verify(mockBaseStrategy).link(LINK_URL);
 	}
 	
 	@Test
@@ -52,15 +54,15 @@ public class LinkWatchingStrategyTest {
 	}
 	
 	@Test
-	public void shouldDelegateResourceCalls() {
+	public void shouldDelegateResourceCalls() throws URISyntaxException {
 		// given
 		final LinkWatchingStrategy strategy = new LinkWatchingStrategy(mockBaseStrategy, l->{});
 
 		// when
-		strategy.resource(LINK_URI);
+		strategy.resource(LINK_URL.toURI());
 
 		// then
-		Mockito.verify(mockBaseStrategy).resource(LINK_URI);
+		Mockito.verify(mockBaseStrategy).resource(LINK_URL.toURI());
 	}
 	
 	@Test

@@ -1,7 +1,8 @@
 package org.nightcrawler.application;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -23,12 +24,18 @@ public class Controller {
 		this.crawlerFactory = Preconditions.checkNotNull(crawlerFactory);
 	}
 
-	public String generatePageMap(final String argument) throws URISyntaxException {
-		return generatePageMap(new URI(argument));
+	public String generatePageMap(final String[] args) throws ValidationException {	
+		if (args.length < 1) {throw new ValidationException();}	
+		try {			
+			return generatePageMap(new URL(Optional.ofNullable(args[0]).orElseThrow(ValidationException::new)));
+		} catch (final MalformedURLException e) {
+			throw new ValidationException(e);
+		}		
 	}
 
-	private String generatePageMap(final URI uri) {
-		final Set<Page> pages = crawlerFactory.get().crawl(uri);
+	private String generatePageMap(final URL uri) {
+		Set<Page> pages;
+		pages = crawlerFactory.get().crawl(uri);
 		return render(pages);
 	}
 
