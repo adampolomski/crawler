@@ -1,9 +1,9 @@
 # Night crawler
-Web crawler application, which builds a site map.
+Web crawler application, which builds a site map as an output. Crawling is limited to a given domain. Any external links will not be followed.
 
-Night crawler uses:
+To speed up processing Night crawler uses:
 - NIO for loading page content
-- Concurrent processing for parsing
+- Concurrent processing for content parsing 
 
 ### Building	
 Night crawler uses Maven as a build manager. To build the jar do:
@@ -14,7 +14,7 @@ mvn install
 
 ### Execution
 ```
-java -jar crawler.jar [page URL]
+java -jar night-crawler-1.0.0-jar-with-dependencies.jar [page URL]
 ```
 
 ### Output
