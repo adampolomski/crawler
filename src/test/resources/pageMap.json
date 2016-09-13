@@ -10,6 +10,17 @@
 			"http://startupnewsroom.com/wp-content/uploads/2016/08/monzo_vert_lightbg.png"
 		]
 	},
+	"http://localhost:8000/": {
+		"links": [
+			"http://www.google.com",
+			"http://localhost:8000/1.html",
+			"http://localhost:8000/2.html",
+			"http://localhost:8000/allSamples.html"
+		],
+		"resources": [
+			"http://startupnewsroom.com/wp-content/uploads/2016/08/monzo_vert_lightbg.png"
+		]
+	},
 	"http://localhost:8000/1.html": {
 		"links": [
 			"http://localhost:8000"
@@ -24,7 +35,7 @@
 	},
 	"http://localhost:8000/allSamples.html": {
 		"links": [
-			"http://localhost:8000",
+			"http://localhost:8000/",
 			"http://localhost:8000/2.html",
 			"http://www.google.com"
 		],
