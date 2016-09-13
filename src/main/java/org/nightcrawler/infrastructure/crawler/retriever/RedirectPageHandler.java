@@ -29,7 +29,8 @@ class RedirectPageHandler extends DecoratingPageHandler {
 
 	@Override
 	Response onCompleted(final Response response, final UnaryOperator<Response> fallback) throws Exception {
-		if (response.getStatusCode() == 301) { // Redirect
+		final int statusCode = response.getStatusCode();
+		if (statusCode == 301 || statusCode == 302) { // Redirect
 			final HandlingStrategy strategy = strategyBuilder.build(RedirectPage.builder());
 			executorService.execute(() -> parseRedirect(response, strategy));
 		} else {
