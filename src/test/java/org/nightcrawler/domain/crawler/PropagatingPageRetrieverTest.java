@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.nightcrawler.domain.crawler.index.Aquireable;
+import org.nightcrawler.domain.crawler.strategy.HandlingStrategy;
 
 public class PropagatingPageRetrieverTest {
 
@@ -29,11 +30,12 @@ public class PropagatingPageRetrieverTest {
 	public void shouldPropagateIfAcquired() {
 		// given
 		final PropagatingPageRetriever retriever = new PropagatingPageRetriever(mockDelegateRetriever, mockIndex);
-		Mockito.when(mockIndex.aquire(PAGE_URI)).thenReturn(Optional.of(p -> {}));
-
+		
+		Mockito.when(mockIndex.aquire(PAGE_URI)).thenReturn(Optional.of(p -> {}));		
+		
 		// when
-		retriever.crawl(PAGE_URI, Page::toString);
-
+		retriever.crawl(PAGE_URI, HandlingStrategy.builder(PAGE_URI));		
+		
 		// then
 		Mockito.verify(mockDelegateRetriever).crawl(Mockito.eq(PAGE_URI), Mockito.any());;				
 	}
@@ -45,7 +47,7 @@ public class PropagatingPageRetrieverTest {
 		Mockito.when(mockIndex.aquire(PAGE_URI)).thenReturn(Optional.empty());
 
 		// when
-		retriever.crawl(PAGE_URI, Page::toString);
+		retriever.crawl(PAGE_URI, HandlingStrategy.builder(PAGE_URI));
 
 		// then
 		Mockito.verifyZeroInteractions(mockDelegateRetriever);

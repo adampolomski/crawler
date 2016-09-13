@@ -20,6 +20,12 @@ public class JsonAppenderRenderer implements Renderer<Consumer<JsonObjectBuilder
 		this.address = Optional.of(render(address));
 		return this;
 	}
+	
+	@Override
+	public Renderer<Consumer<JsonObjectBuilder>> redirect(final URI address) {
+		value.add("redirect", render(address));
+		return this;
+	}
 
 	@Override
 	public Renderer<Consumer<JsonObjectBuilder>> links(final Iterable<URI> links) {
@@ -46,5 +52,4 @@ public class JsonAppenderRenderer implements Renderer<Consumer<JsonObjectBuilder
 	private static String render(final URI uri) {
 		return uri.toString().replaceAll("/$", "");
 	}
-
 }

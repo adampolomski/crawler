@@ -5,6 +5,8 @@ import java.net.URI;
 public interface Renderer<T> {
 
 	Renderer<T> address(final URI address);
+	
+	Renderer<T> redirect(final URI address);
 
 	Renderer<T> links(final Iterable<URI> links);
 

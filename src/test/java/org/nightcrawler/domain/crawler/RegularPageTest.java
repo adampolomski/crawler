@@ -2,16 +2,13 @@ package org.nightcrawler.domain.crawler;
 
 import java.net.URI;
 import java.util.Map;
-import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 
-public class PageTest {
+public class RegularPageTest {
 
 	private static final URI LINK_URI = URI.create("http://localhost:8000/1.html");
 	private static final URI IMG_URI = URI.create("http://localhost:8000/img.jpg");
@@ -20,27 +17,14 @@ public class PageTest {
 	@Test
 	public void shouldBuildPage() {
 		// when
-		final Page page = Page.builder(PAGE_URI).link(LINK_URI)
-				.resource(IMG_URI).build();
+		final Page page = RegularPage.builder().link(LINK_URI)
+				.resource(IMG_URI).build(PAGE_URI);
 
 		// then
 		Assert.assertEquals(ImmutableMap.of("a", PAGE_URI, 
 				"l", ImmutableSet.of(LINK_URI),
 				"r", ImmutableSet.of(IMG_URI)),
 				page.render(mapRenderer()));
-	}		
-	
-	@Test
-	public void shouldVisitLinks() {
-		// given
-		final Page page = Page.builder(PAGE_URI).link(LINK_URI).build();
-
-		// when
-		final Set<URI> visitedLinks = Sets.newHashSet();
-		page.visitLinks(visitedLinks::add);
-		
-		// then
-		Assert.assertEquals(ImmutableSet.of(LINK_URI), visitedLinks);		
 	}
 
 	private static Renderer<Map<String, Object>> mapRenderer() {
@@ -69,6 +53,12 @@ public class PageTest {
 			@Override
 			public Map<String, Object> build() {
 				return builder.build();
+			}
+
+			@Override
+			public Renderer<Map<String, Object>> redirect(URI address) {
+				builder.put("rd", address);
+				return this;
 			}
 		};
 	}

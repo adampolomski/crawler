@@ -5,16 +5,17 @@ import java.util.stream.Stream;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.nightcrawler.domain.crawler.strategy.HandlingStrategy;
 
 public class JsoupPageParser implements PageParser {
 
 	@Override
-	public <P> P parse(final String content, final PageBuilder<P> builder) {
-		final Document document = builder.forAddress(uri -> Jsoup.parse(content, uri.toString()));
-		hyperlinks(document).map(URI::create).forEach(builder::link);
+	public void parse(final String content, final HandlingStrategy strategy) {
+		final Document document = strategy.forAddress(uri -> Jsoup.parse(content, uri.toString()));
+		hyperlinks(document).map(URI::create).forEach(strategy::link);
 		Stream.concat(Stream.concat(links(document), images(document)), scripts(document))
-				.filter(attr -> !attr.isEmpty()).map(URI::create).forEach(builder::resource);
-		return builder.build();
+				.filter(attr -> !attr.isEmpty()).map(URI::create).forEach(strategy::resource);
+		strategy.process();
 	}
 
 	private static Stream<String> hyperlinks(final Document document) {

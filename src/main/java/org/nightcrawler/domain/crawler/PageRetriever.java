@@ -1,14 +1,15 @@
 package org.nightcrawler.domain.crawler;
 
 import java.net.URI;
-import java.util.function.Consumer;
+
+import org.nightcrawler.domain.crawler.strategy.HandlingStrategyBuilder;
+import org.nightcrawler.domain.crawler.strategy.HandlingStrategy;
 
 public abstract class PageRetriever {
 
-	public abstract void crawl(URI uri, Consumer<Page> handler);
+	public abstract void crawl(URI uri, HandlingStrategyBuilder<Page> strategyBuilder);
 	
 	public void crawl(final URI uri) {
-		crawl(uri, p -> {});
-	}
-	
+		crawl(uri, HandlingStrategy.builder(uri));
+	}	
 }

@@ -6,13 +6,14 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
+import org.nightcrawler.domain.crawler.strategy.HandlingStrategy;
+import org.nightcrawler.domain.crawler.strategy.PageBuilder;
 import org.springframework.core.io.ClassPathResource;
 
 import com.google.common.collect.ImmutableMap;
@@ -26,9 +27,10 @@ public class JsoupPageParserTest {
 	public void shouldParsePage() throws IOException {
 		// given
 		final JsoupPageParser parser = new JsoupPageParser();
-
-		// when
-		final Map<String, Object> page = parser.parse(content(PAGE_URI), mapPagebuilder(PAGE_URI));
+		final PageBuilder<Map<String, Object>> mapPagebuilder = mapPagebuilder(PAGE_URI);
+		
+		// when		
+		parser.parse(content(PAGE_URI), HandlingStrategy.<Map<String, Object>>builder(PAGE_URI).build(mapPagebuilder));
 
 		// then
 		Assert.assertEquals(
@@ -39,26 +41,14 @@ public class JsoupPageParserTest {
 								"ios-app://305343404/tumblr/x-callback-url/blog?blogName=tomblomfield",
 								"http://assets.tumblr.com/assets/scripts/tumblelog_post_message_queue.js?_v=cf140c0f1704d59bad98d3be7adddfde",
 								"http://www.gravatar.com/avatar/c833be5582482777b51b8fc73e8b0586?s=128&d=identicon&r=PG")),
-				page);
+				mapPagebuilder.build(PAGE_URI));
 
 	}
 
 	private PageBuilder<Map<String, Object>> mapPagebuilder(final URI pageUri) {
 		return new PageBuilder<Map<String, Object>>(){
 
-			final Map<String, Object> page = Maps.newHashMap();
-			
-			@Override
-			public <T> T forAddress(final Function<URI, T> transformation) {
-				return transformation.apply(pageUri);
-			}
-
-			@Override
-			public Map<String, Object> build() {
-				page.put("address", pageUri);
-				return page;
-			}
-
+			final Map<String, Object> page = Maps.newHashMap();						
 
 			@Override
 			public PageBuilder<Map<String, Object>> link(final URI link) {	
@@ -75,6 +65,12 @@ public class JsoupPageParserTest {
 			public PageBuilder<Map<String, Object>> resource(final URI resource) {
 				addUri("resources", resource);
 				return this;
+			}
+
+			@Override
+			public Map<String, Object> build(URI address) {
+				page.put("address", pageUri);
+				return page;
 			}};
 	}
 

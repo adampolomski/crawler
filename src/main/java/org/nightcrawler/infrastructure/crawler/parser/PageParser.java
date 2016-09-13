@@ -1,7 +1,8 @@
 package org.nightcrawler.infrastructure.crawler.parser;
 
-@FunctionalInterface
+import org.nightcrawler.domain.crawler.strategy.HandlingStrategy;
+
 public interface PageParser {
 
-	<P> P parse(String content, PageBuilder<P> builder);
+	void parse(String content, HandlingStrategy strategy);
 }

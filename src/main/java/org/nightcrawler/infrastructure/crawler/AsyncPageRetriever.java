@@ -1,13 +1,14 @@
 package org.nightcrawler.infrastructure.crawler;
 
 import java.net.URI;
-import java.util.function.Consumer;
-
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.Response;
 import org.nightcrawler.domain.crawler.Page;
 import org.nightcrawler.domain.crawler.PageRetriever;
+import org.nightcrawler.domain.crawler.RedirectPage;
+import org.nightcrawler.domain.crawler.RegularPage;
+import org.nightcrawler.domain.crawler.strategy.HandlingStrategyBuilder;
 import org.nightcrawler.infrastructure.crawler.parser.AsyncParser;
 
 public class AsyncPageRetriever extends PageRetriever {
@@ -21,12 +22,27 @@ public class AsyncPageRetriever extends PageRetriever {
 	}
 
 	@Override
-	public void crawl(final URI uri, final Consumer<Page> handler) {
+	public void crawl(final URI uri, final HandlingStrategyBuilder<Page> strategyBuilder) {
 		asyncHttpClient.prepareGet(uri.toString()).execute(new AsyncCompletionHandler<Response>() {
 			@Override
-			public Response onCompleted(final Response response) throws Exception {
-				asyncParser.parse(response.getResponseBody(), Page.builder(uri), handler);
+			public Response onCompleted(final Response response) throws Exception {			
+				if (response.getStatusCode() == 301) {		
+					strategyBuilder.build(RedirectPage.builder()).link(location(uri, response)).process();
+				}
+				else {
+					asyncParser.parse(response.getResponseBody(), strategyBuilder.build(RegularPage.builder()));
+				}
 				return response;
+			}
+
+			private URI location(final URI uri, final Response response) {
+				return uri.resolve(URI.create(response.getHeader("Location")));
+			}
+			
+			@Override
+			public void onThrowable(final Throwable t) {
+				strategyBuilder.build(RegularPage.builder()).process();
+				super.onThrowable(t);
 			}
 
 		});
